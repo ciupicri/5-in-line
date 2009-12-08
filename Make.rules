@@ -1,0 +1,46 @@
+CC = gcc
+LEX = flex
+YACC = yacc
+BISON = bison
+
+CFLAGS = -Wall -g --std=c99 -D_POSIX_C_SOURCE=199506L -O2 -I ../../mylibs
+# LDFLAGS = -lfl
+XARGS = xargs
+FIND = find
+INDENTSTYLE = -kr -i8
+
+
+default: all
+
+
+
+.c:
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+.c.o:
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+
+
+
+.PHONY: objclean distclean clean indent count distro
+objclean:
+	$(FIND) . \( -name '*.o' -or -name '*.class' \) -print0 | \
+		$(XARGS) -0 -r -P 20 -n 1 rm
+
+distclean:
+	$(FIND) . \( -name '*~' -or -name 'core*' \) -print0 | \
+		$(XARGS) -0 -r -P 20 -n 1 rm
+
+indent:
+	$(FIND) . \( -name '*.c' -or -name '*.h' -or -name '*.cpp' \
+				 -or -name '*.java' \) -print0 \
+		| $(XARGS) -0 -r -P 5 -n 1 indent $(INDENTSTYLE)
+
+count:
+	$(FIND) . \( -name '*.c' -or -name '*.h' -or -name '*.cpp' \
+				 -or -name '*.java' \) -print0 \
+		| $(XARGS) -0 -r -n 1 wc -l
+
+distro:	clean
+	../../distro.sh	
